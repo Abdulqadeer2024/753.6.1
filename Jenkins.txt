@@ -4,85 +4,119 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "Just building the initial stage with the automation tool maven"
+                echo 'Building the code using Maven'
+                sh 'mvn clean package' // Maven build command
+            }
+            post {
+                always {
+                    echo 'Build stage completed'
+                }
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo "To ensure code functionality, run unit tests using a tool like pytest. For testing how different components work together, run integration tests using a tool such as Selenium or PyTest-BDD."
+                echo 'Running unit tests using JUnit'
+                sh 'mvn test' // Running unit tests
+                echo 'Running integration tests using Selenium'
+                sh 'mvn verify -P integration-tests' // Running integration tests
             }
             post {
+                always {
+                    echo 'Unit and Integration Tests stage completed'
+                }
                 success {
-                    emailext attachLog: true, 
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Unit and Integration Tests Passed',
-                    body: 'The unit and integration tests have passed. See attached logs for more information.'
+                    emailext (
+                        subject: "Unit and Integration Tests Succeeded",
+                        body: "The unit and integration tests stage has completed successfully.",
+                        attachLog: true,
+                        to: "v1e192727@gmail.com"
+                    )
                 }
                 failure {
-                    emailext attachLog: true, 
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Unit and Integration Tests Failed',
-                    body: 'The unit and integration tests have failed. See attached logs for more information.'
+                    emailext (
+                        subject: "Unit and Integration Tests Failed",
+                        body: "The unit and integration tests stage has failed. Please check the attached logs for more details.",
+                        attachLog: true,
+                        to: "v1e192727@gmail.com"
+                    )
                 }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo "For code analysis and ensuring industry standards compliance, integrate a tool like SonarQube or Checkstyle into Jenkins pipeline."
+                echo 'Analyzing code using SonarQube'
+                sh 'mvn sonar:sonar' // SonarQube analysis command
             }
             post {
-                success {
-                    emailext attachLog: true,
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Code Analysis Passed',
-                    body: 'The code analysis has passed. See attached logs for more information.'
-                }
-                failure {
-                    emailext attachLog: true,
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Code Analysis Failed',
-                    body: 'The code analysis has failed. See attached logs for more information.'
+                always {
+                    echo 'Code Analysis stage completed'
                 }
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo "To perform a security scan on the code and identify vulnerabilities, consider using a tool like OWASP ZAP or SonarQube with its security plugins."
+                echo 'Performing security scan using OWASP ZAP'
+                sh 'zap-cli start && zap-cli quick-scan http://yourapp.com' // OWASP ZAP scan command
             }
             post {
+                always {
+                    echo 'Security Scan stage completed'
+                }
                 success {
-                    emailext attachLog: true,
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Security Scan Passed',
-                    body: 'The security scan has passed. See attached logs for more information.'
+                    emailext (
+                        subject: "Security Scan Succeeded",
+                        body: "The security scan stage has completed successfully.",
+                        attachLog: true,
+                        to: "v1e192727@gmail.com"
+                    )
                 }
                 failure {
-                    emailext attachLog: true,
-                    to: 'v1e193030@gmail.com',
-                    subject: 'Security Scan Failed',
-                    body: 'The security scan has failed. See attached logs for more information.'
+                    emailext (
+                        subject: "Security Scan Failed",
+                        body: "The security scan stage has failed. Please check the attached logs for more details.",
+                        attachLog: true,
+                        to: "v1e192727@gmail.com"
+                    )
                 }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo "Deploy an application to a staging server like an AWS EC2 instance"
+                echo 'Deploying the application to staging server'
+                sh 'scp target/yourapp.war user@staging-server:/path/to/deploy' // Deployment command for staging
+            }
+            post {
+                always {
+                    echo 'Deploy to Staging stage completed'
+                }
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo "Run integration tests on the staging environment using a specific tool, such as Selenium or JMeter"
+                echo 'Running integration tests on the staging environment'
+                sh 'mvn verify -P staging-integration-tests' // Integration tests for staging
+            }
+            post {
+                always {
+                    echo 'Integration Tests on Staging stage completed'
+                }
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo "Deploy the application to a production server using a specific tool, such as AWS Elastic Beanstalk or Docker"
+                echo 'Deploying the application to production server'
+                sh 'scp target/yourapp.war user@production-server:/path/to/deploy' // Deployment command for production
+            }
+            post {
+                always {
+                    echo 'Deploy to Production stage completed'
+                }
             }
         }
     }
