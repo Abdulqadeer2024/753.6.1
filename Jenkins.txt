@@ -1,4 +1,3 @@
-[12:00 AM] CHRISTO RAJU
 pipeline {
 
     agent any
