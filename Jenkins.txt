@@ -1,115 +1,248 @@
+[12:00 AM] CHRISTO RAJU
 pipeline {
+
     agent any
-
+ 
     stages {
+
         stage('Build') {
+
             steps {
+
                 echo 'Building the code using Maven'
+
             }
+
             post {
+
                 always {
+
                     echo 'Build stage completed'
-                }
-            }
-        }
 
+                }
+
+            }
+
+        }
+ 
         stage('Unit and Integration Tests') {
+
             steps {
+
                 echo 'Running unit tests using JUnit'
+
                 echo 'Running integration tests using Selenium'
+
             }
+
             post {
+
                 always {
+
                     echo 'Unit and Integration Tests stage completed'
+
                 }
+
                 success {
+
                     emailext (
+
                         subject: "Unit and Integration Tests Succeeded",
+
                         body: "The unit and integration tests stage has completed successfully.",
+
                         attachLog: true,
+
                         to: "v1e192727@gmail.com"
+
                     )
+
                 }
+
                 failure {
+
                     emailext (
+
                         subject: "Unit and Integration Tests Failed",
+
                         body: "The unit and integration tests stage has failed. Please check the attached logs for more details.",
-                        attachLog: true,
-                        to: "v1e192727@gmail.com"
-                    )
-                }
-            }
-        }
 
+                        attachLog: true,
+
+                        to: "v1e192727@gmail.com"
+
+                    )
+
+                }
+
+            }
+
+        }
+ 
         stage('Code Analysis') {
+
             steps {
+
                 echo 'Analyzing code using SonarQube'
+
             }
+
             post {
+
                 always {
+
                     echo 'Code Analysis stage completed'
-                }
-            }
-        }
 
-        stage('Security Scan') {
-            steps {
-                echo 'Performing security scan using OWASP ZAP'
-            }
-            post {
-                always {
-                    echo 'Security Scan stage completed'
                 }
-                success {
+
+			success {
+
                     emailext (
-                        subject: "Security Scan Succeeded",
-                        body: "The security scan stage has completed successfully.",
+
+                        subject: "Code Analysis Passed",
+
+                        body: "The code analysis has passed. See attached logs for more information.",
+
                         attachLog: true,
+
                         to: "v1e192727@gmail.com"
+
                     )
+
                 }
+
                 failure {
+
                     emailext (
-                        subject: "Security Scan Failed",
-                        body: "The security scan stage has failed. Please check the attached logs for more details.",
+
+                        subject: "Code Analysis Failed",
+
+                        body: "The code analysis has failed. See attached logs for more information.",
+
                         attachLog: true,
+
                         to: "v1e192727@gmail.com"
+
                     )
-                }
-            }
-        }
 
+                }
+
+            }
+
+        }
+ 
+        stage('Security Scan') {
+
+            steps {
+
+                echo 'Performing security scan using OWASP ZAP'
+
+            }
+
+            post {
+
+                always {
+
+                    echo 'Security Scan stage completed'
+
+                }
+
+                success {
+
+                    emailext (
+
+                        subject: "Security Scan Succeeded",
+
+                        body: "The security scan stage has completed successfully.",
+
+                        attachLog: true,
+
+                        to: "v1e192727@gmail.com"
+
+                    )
+
+                }
+
+                failure {
+
+                    emailext (
+
+                        subject: "Security Scan Failed",
+
+                        body: "The security scan stage has failed. Please check the attached logs for more details.",
+
+                        attachLog: true,
+
+                        to: "v1e192727@gmail.com"
+
+                    )
+
+                }
+
+            }
+
+        }
+ 
         stage('Deploy to Staging') {
+
             steps {
+
                 echo 'Deploying the application to staging server'
+
             }
+
             post {
+
                 always {
+
                     echo 'Deploy to Staging stage completed'
-                }
-            }
-        }
 
+                }
+
+            }
+
+        }
+ 
         stage('Integration Tests on Staging') {
+
             steps {
+
                 echo 'Running integration tests on the staging environment'
+
             }
+
             post {
+
                 always {
+
                     echo 'Integration Tests on Staging stage completed'
+
                 }
+
             }
+
+        }
+ 
+        stage('Deploy to Production') {
+
+            steps {
+
+                echo 'Deploying the application to production server'
+
+            }
+
+            post {
+
+                always {
+
+                    echo 'Deploy to Production stage completed'
+
+                }
+
+            }
+
         }
 
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying the application to production server'
-            }
-            post {
-                always {
-                    echo 'Deploy to Production stage completed'
-                }
-            }
-        }
     }
+
 }
